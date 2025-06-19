@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizer Algoritma</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        .kotak-array {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .elemen-array {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #3B82F6;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .elemen-array.ditemukan {
+            background-color: #10B981;
+            transform: scale(1.1);
+        }
+        .elemen-array.membandingkan {
+            background-color: #F59E0B;
+            transform: scale(1.1);
+        }
+        .elemen-array.terurut {
+            background-color: #8B5CF6;
+        }
+        .keterangan-algoritma {
+            background-color: #F3F4F6;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-blue-600 text-white p-6 shadow-lg">
+            <div class="container mx-auto">
+                <h1 class="text-3xl font-bold">Visualizer Algoritma</h1>
+                <p class="mt-2">Dibuat oleh Asshiddiqi Mei fakhrurozi - NPM: 24312144</p>
+                <p>Universitas Teknokrat Indonesia</p>
+            </div>
+        </header>
+
+        <!-- Konten Utama -->
+        <main class="container mx-auto p-6">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex flex-col md:flex-row gap-6">
+                    <!-- Menu Utama -->
+                    <div class="md:w-1/4 bg-gray-50 p-4 rounded-lg">
+                        <h2 class="text-xl font-bold mb-4 text-blue-600">Menu Utama</h2>
+                        <button onclick="tampilkanBagian('pencarian')" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg mb-2 text-left">
+                            <i class="fas fa-search mr-2"></i> Algoritma Pencarian
+                        </button>
+                        <button onclick="tampilkanBagian('pengurutan')" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg mb-2 text-left">
+                            <i class="fas fa-sort-amount-down mr-2"></i> Algoritma Pengurutan
+                        </button>
+                        
+                        <div class="mt-6">
+                            <h3 class="font-bold mb-2">Kontrol Array</h3>
+                            <input type="text" id="input-array" placeholder="Masukkan angka (pisahkan dengan koma)" 
+                                   class="w-full p-2 border rounded-lg mb-2" 
+                                   value="64,34,25,12,22,11,90,5,77,1">
+                            <button onclick="resetArray()" class="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg">
+                                <i class="fas fa-sync-alt mr-2"></i> Reset Array
+                            </button>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <h3 class="font-bold mb-2">Kecepatan Animasi</h3>
+                            <input type="range" id="kontrol-kecepatan" min="10" max="1000" value="300" 
+                                   class="w-full">
+                            <div class="flex justify-between text-sm">
+                                <span>Lambat</span>
+                                <span>Cepat</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Area Konten -->
+                    <div class="md:w-3/4">
+                        <!-- Bagian Pencarian -->
+                        <div id="bagian-pencarian" class="hidden">
+                            <h2 class="text-2xl font-bold mb-4 text-blue-600">Algoritma Pencarian</h2>
+                            <div class="keterangan-algoritma">
+                                <h3 class="font-bold mb-2">Array Saat Ini:</h3>
+                                <div id="array-pencarian" class="kotak-array"></div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                <div>
+                                    <h3 class="font-bold mb-2">Pilih Algoritma:</h3>
+                                    <select id="algoritma-pencarian" class="w-full p-2 border rounded-lg">
+                                        <option value="sequential">Pencarian Sekuensial</option>
+                                        <option value="binary">Pencarian Biner</option>
+                                        <option value="interpolation">Pencarian Interpolasi</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold mb-2">Angka yang Dicari:</h3>
+                                    <div class="flex">
+                                        <input type="number" id="angka-cari" class="w-full p-2 border rounded-lg mr-2">
+                                        <button onclick="jalankanPencarian()" class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg">
+                                            <i class="fas fa-play mr-2"></i> Jalankan
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <h3 class="font-bold mb-2">Penyisipan Elemen:</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label>Angka Baru</label>
+                                        <input type="number" id="angka-baru" class="w-full p-2 border rounded-lg">
+                                    </div>
+                                    <div>
+                                        <label>Posisi (indeks)</label>
+                                        <input type="number" id="posisi-sisip" class="w-full p-2 border rounded-lg">
+                                    </div>
+                                    <div class="flex items-end">
+                                        <button onclick="sisipkanElemen()" class="w-full bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 rounded-lg">
+                                            <i class="fas fa-plus mr-2"></i> Sisipkan
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="keterangan-algoritma">
+                                <h3 class="font-bold mb-2">Penjelasan Algoritma:</h3>
+                                <p id="penjelasan-pencarian">Pilih algoritma pencarian untuk melihat penjelasannya.</p>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <h3 class="font-bold mb-2">Hasil Pencarian:</h3>
+                                <div id="hasil-pencarian" class="p-4 bg-gray-100 rounded-lg"></div>
+                            </div>
+                        </div>
+
+                        <!-- Bagian Pengurutan -->
+                        <div id="bagian-pengurutan" class="hidden">
+                            <h2 class="text-2xl font-bold mb-4 text-blue-600">Algoritma Pengurutan</h2>
+                            <div class="keterangan-algoritma">
+                                <h3 class="font-bold mb-2">Array Saat Ini:</h3>
+                                <div id="array-pengurutan" class="kotak-array"></div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                                <button onclick="jalankanPengurutan('insertion')" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
+                                    <i class="fas fa-sort mr-2"></i> Insertion Sort
+                                </button>
+                                <button onclick="jalankanPengurutan('merge')" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
+                                    <i class="fas fa-sort mr-2"></i> Merge Sort
+                                </button>
+                                <button onclick="jalankanPengurutan('bubble')" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
+                                    <i class="fas fa-sort mr-2"></i> Bubble Sort
+                                </button>
+                                <button onclick="jalankanPengurutan('shell')" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
+                                    <i class="fas fa-sort mr-2"></i> Shell Sort
+                                </button>
+                                <button onclick="jalankanPengurutan('quick')" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
+                                    <i class="fas fa-sort mr-2"></i> Quick Sort
+                                </button>
+                                <button onclick="jalankanPengurutan('radix')" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg">
+                                    <i class="fas fa-sort mr-2"></i> Radix Sort
+                                </button>
+                            </div>
+                            
+                            <div class="keterangan-algoritma">
+                                <h3 class="font-bold mb-2">Penjelasan Algoritma:</h3>
+                                <p id="penjelasan-pengurutan">Pilih algoritma pengurutan untuk melihat penjelasannya.</p>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <h3 class="font-bold mb-2">Proses Pengurutan:</h3>
+                                <div id="proses-pengurutan" class="p-4 bg-gray-100 rounded-lg"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Variabel global
+        let dataArray = [64, 34, 25, 12, 22, 11, 90, 5, 77, 1];
+        let kecepatanAnimasi = 300;
+        let sedangBerjalan = false;
+
+        // Inisialisasi
+        document.addEventListener('DOMContentLoaded', function() {
+            tampilkanArray('array-pencarian', dataArray);
+            tampilkanArray('array-pengurutan', dataArray);
+            updatePenjelasanPencarian();
+            updatePenjelasanPengurutan();
+        });
+
+        // Fungsi untuk menampilkan/menyembunyikan bagian
+        function tampilkanBagian(bagian) {
+            document.getElementById('bagian-pencarian').classList.add('hidden');
+            document.getElementById('bagian-pengurutan').classList.add('hidden');
+            document.getElementById(`bagian-${bagian}`).classList.remove('hidden');
+        }
+
+        // Fungsi untuk menampilkan array di elemen tertentu
+        function tampilkanArray(elemenId, array) {
+            const container = document.getElementById(elemenId);
+            container.innerHTML = '';
+            
+            array.forEach((nilai, index) => {
+                const elemen = document.createElement('div');
+                elemen.className = 'elemen-array';
+                elemen.textContent = nilai;
+                elemen.id = `${elemenId}-${index}`;
+                container.appendChild(elemen);
+            });
+        }
+
+        // Fungsi untuk mereset array
+        function resetArray() {
+            if (sedangBerjalan) return;
+            
+            const input = document.getElementById('input-array').value;
+            dataArray = input.split(',').map(Number).filter(n => !isNaN(n));
+            
+            if (dataArray.length === 0) {
+                dataArray = [64, 34, 25, 12, 22, 11, 90, 5, 77, 1];
+                document.getElementById('input-array').value = dataArray.join(',');
+            }
+            
+            tampilkanArray('array-pencarian', dataArray);
+            tampilkanArray('array-pengurutan', dataArray);
+            document.getElementById('hasil-pencarian').innerHTML = '';
+            document.getElementById('proses-pengurutan').innerHTML = '';
+        }
+
+        // Fungsi untuk mengupdate kecepatan animasi
+        function updateKecepatan() {
+            kecepatanAnimasi = 1010 - document.getElementById('kontrol-kecepatan').value;
+        }
+
+        // Fungsi untuk menjalankan pencarian
+        async function jalankanPencarian() {
+            if (sedangBerjalan) return;
+            sedangBerjalan = true;
+            
+            const algoritma = document.getElementById('algoritma-pencarian').value;
+            const nilaiCari = parseInt(document.getElementById('angka-cari').value);
+            const hasilDiv = document.getElementById('hasil-pencarian');
+            hasilDiv.innerHTML = '';
+            
+            if (isNaN(nilaiCari)) {
+                hasilDiv.innerHTML = '<div class="text-red-500">Masukkan angka yang valid!</div>';
+                sedangBerjalan = false;
+                return;
+            }
+            
+            let hasil;
+            const arrayUntukDicari = [...dataArray];
+            
+            switch (algoritma) {
+                case 'sequential':
+                    hasil = await pencarianSekuensial(arrayUntukDicari, nilaiCari);
+                    break;
+                case 'binary':
+                    hasil = await pencarianBiner(arrayUntukDicari, nilaiCari);
+                    break;
+                case 'interpolation':
+                    hasil = await pencarianInterpolasi(arrayUntukDicari, nilaiCari);
+                    break;
+            }
+            
+            if (hasil.hasil !== -1) {
+                hasilDiv.innerHTML = `<div class="text-green-600">Angka ${nilaiCari} ditemukan pada indeks ke-${hasil.hasil}</div>`;
+            } else {
+                hasilDiv.innerHTML = `<div class="text-red-500">Angka ${nilaiCari} tidak ditemukan dalam array</div>`;
+            }
+            
+            sedangBerjalan = false;
+        }
+
+        // Implementasi algoritma pencarian sekuensial
+        async function pencarianSekuensial(array, nilaiCari) {
+            for (let i = 0; i < array.length; i++) {
+                sorotElemen('array-pencarian', i, 'membandingkan');
+                await jeda(kecepatanAnimasi);
+                
+                if (array[i] === nilaiCari) {
+                    sorotElemen('array-pencarian', i, 'ditemukan');
+                    return {hasil: i};
+                }
+                
+                resetSorotan('array-pencarian', i);
+            }
+            return {hasil: -1};
+        }
+
+        // Implementasi algoritma pencarian biner
+        async function pencarianBiner(array, nilaiCari) {
+            // Urutkan array terlebih dahulu
+            await jalankanPengurutan('quick', true);
+            array = [...dataArray]; // Salin array yang sudah diurutkan
+            
+            let kiri = 0;
+            let kanan = array.length - 1;
+            
+            while (kiri <= kanan) {
+                const tengah = Math.floor((kiri + kanan) / 2);
+                
+                sorotElemen('array-pencarian', tengah, 'membandingkan');
+                await jeda(kecepatanAnimasi);
+                
+                if (array[tengah] === nilaiCari) {
+                    sorotElemen('array-pencarian', tengah, 'ditemukan');
+                    return {hasil: tengah};
+                } else if (array[tengah] < nilaiCari) {
+                    for (let i = kiri; i <= tengah; i++) {
+                        sorotElemen('array-pencarian', i, 'membandingkan', 'lightgray');
+                    }
+                    kiri = tengah + 1;
+                } else {
+                    for (let i = tengah; i <= kanan; i++) {
+                        sorotElemen('array-pencarian', i, 'membandingkan', 'lightgray');
+                    }
+                    kanan = tengah - 1;
+                }
+                
+                await jeda(kecepatanAnimasi);
+                resetSorotan('array-pencarian');
+            }
+            
+            return {hasil: -1};
+        }
+
+        // Implementasi algoritma pencarian interpolasi
+        async function pencarianInterpolasi(array, nilaiCari) {
+            // Urutkan array terlebih dahulu
+            await jalankanPengurutan('quick', true);
+            array = [...dataArray]; // Salin array yang sudah diurutkan
+            
+            let kiri = 0;
+            let kanan = array.length - 1;
+            
+            while (kiri <= kanan && nilaiCari >= array[kiri] && nilaiCari <= array[kanan]) {
+                if (kiri === kanan) {
+                    sorotElemen('array-pencarian', kiri, 'membandingkan');
+                    await jeda(kecepatanAnimasi);
+                    
+                    if (array[kiri] === nilaiCari) {
+                        sorotElemen('array-pencarian', kiri, 'ditemukan');
+                        return {hasil: kiri};
+                    }
+                    return {hasil: -1};
+                }
+                
+                // Hitung posisi dengan rumus interpolasi
+                const posisi = kiri + Math.floor(((nilaiCari - array[kiri]) * (kanan - kiri)) / (array[kanan] - array[kiri]));
+                
+                sorotElemen('array-pencarian', posisi, 'membandingkan');
+                await jeda(kecepatanAnimasi);
+                
+                if (array[posisi] === nilaiCari) {
+                    sorotElemen('array-pencarian', posisi, 'ditemukan');
+                    return {hasil: posisi};
+                }
+                
+                if (array[posisi] < nilaiCari) {
+                    kiri = posisi + 1;
+                } else {
+                    kanan = posisi - 1;
+                }
+                
+                await jeda(kecepatanAnimasi);
+                resetSorotan('array-pencarian');
+            }
+            
+            return {hasil: -1};
+        }
+
+        // Fungsi untuk menyisipkan elemen
+        function sisipkanElemen() {
+            if (sedangBerjalan) return;
+            
+            const nilaiBaru = parseInt(document.getElementById('angka-baru').value);
+            const posisi = parseInt(document.getElementById('posisi-sisip').value);
+            
+            if (isNaN(nilaiBaru)) {
+                alert('Masukkan angka yang valid!');
+                return;
+            }
+            
+            if (isNaN(posisi) || posisi < 0 || posisi > dataArray.length) {
+                alert(`Masukkan posisi yang valid (0-${dataArray.length})`);
+                return;
+            }
+            
+            // Sisipkan elemen baru
+            dataArray.splice(posisi, 0, nilaiBaru);
+            
+            // Perbarui tampilan
+            tampilkanArray('array-pencarian', dataArray);
+            tampilkanArray('array-pengurutan', dataArray);
+            
+            // Kosongkan input
+            document.getElementById('angka-baru').value = '';
+            document.getElementById('posisi-sisip').value = '';
+        }
+
+        // Fungsi untuk menjalankan pengurutan
+        async function jalankanPengurutan(algoritma, dariPencarian = false) {
+            if (sedangBerjalan && !dariPencarian) return;
+            sedangBerjalan = true;
+            
+            const prosesDiv = document.getElementById('proses-pengurutan');
+            if (!dariPencarian) {
+                prosesDiv.innerHTML = 'Sedang mengurutkan...';
+            }
+            
+            const arrayUntukDiurutkan = [...dataArray];
+            
+            switch (algoritma) {
+                case 'insertion':
+                    await insertionSort(arrayUntukDiurutkan, dariPencarian);
+                    break;
+                case 'merge':
+                    await mergeSort(arrayUntukDiurutkan, 0, arrayUntukDiurutkan.length - 1, dariPencarian);
+                    break;
+                case 'bubble':
+                    await bubbleSort(arrayUntukDiurutkan, dariPencarian);
+                    break;
+                case 'shell':
+                    await shellSort(arrayUntukDiurutkan, dariPencarian);
+                    break;
+                case 'quick':
+                    await quickSort(arrayUntukDiurutkan, 0, arrayUntukDiurutkan.length - 1, dariPencarian);
+                    break;
+                case 'radix':
+                    await radixSort(arrayUntukDiurutkan, dariPencarian);
+                    break;
+            }
+            
+            if (!dariPencarian) {
+                prosesDiv.innerHTML = 'Array telah diurutkan!';
+                dataArray = arrayUntukDiurutkan; // Simpan array yang sudah diurutkan
+                tampilkanArray('array-pencarian', dataArray);
+            }
+            
+            sedangBerjalan = false;
+        }
+
+        // Implementasi algoritma pengurutan: Insertion Sort
+        async function insertionSort(array, dariPencarian) {
+            const idArray = dariPencarian ? 'array-pencarian' : 'array-pengurutan';
+            
+            for (let i = 1; i < array.length; i++) {
+                const kunci = array[i];
+                let j = i - 1;
+                
+                sorotElemen(idArray, i, 'membandingkan');
+                await jeda(kecepatanAnimasi);
+                
+                while (j >= 0 && array[j] > kunci) {
+                    sorotElemen(idArray, j, 'membandingkan');
+                    array[j + 1] = array[j];
+                    j--;
+                    
+                    await perbaruiArray(idArray, array);
+                    await jeda(kecepatanAnimasi);
+                }
+                
+                array[j + 1] = kunci;
+                await perbaruiArray(idArray, array);
+                resetSorotan(idArray);
+            }
+        }
+
+        // Implementasi algoritma pengurutan: Merge Sort
+        async function mergeSort(array, l, r, dariPencarian) {
+            if (l >= r) return;
+            
+            const m = Math.floor((l + r) / 2);
+            await mergeSort(array, l, m, dariPencarian);
+            await mergeSort(array, m + 1, r, dariPencarian);
+            await merge(array, l, m, r, dariPencarian);
+        }
+
+        async function merge(array, l, m, r, dariPencarian) {
+            const idArray = dariPencarian ? 'array-pencarian' : 'array-pengurutan';
+            const n1 = m - l + 1;
+            const n2 = r - m;
+            
+            const L = new Array(n1);
+            const R = new Array(n2);
+            
+            for (let i = 0; i < n1; i++) L[i] = array[l + i];
+            for (let j = 0; j < n2; j++) R[j] = array[m + 1 + j];
+            
+            let i = 0, j = 0, k = l;
+            
+            while (i < n1 && j < n2) {
+                sorotElemen(idArray, l + i, 'membandingkan');
+                sorotElemen(idArray, m + 1 + j, 'membandingkan');
+                await jeda(kecepatanAnimasi);
+                
+                if (L[i] <= R[j]) {
+                    array[k] = L[i];
+                    i++;
+                } else {
+                    array[k] = R[j];
+                    j++;
+                }
+                
+                await perbaruiArray(idArray, array);
+                k++;
+                resetSorotan(idArray);
+            }
+            
+            while (i < n1) {
+                array[k] = L[i];
+                await perbaruiArray(idArray, array);
+                i++;
+                k++;
+            }
+            
+            while (j < n2) {
+                array[k] = R[j];
+                await perbaruiArray(idArray, array);
+                j++;
+                k++;
+            }
+        }
+
+        // Implementasi algoritma pengurutan: Bubble Sort
+        async function bubbleSort(array, dariPencarian) {
+            const idArray = dariPencarian ? 'array-pencarian' : 'array-pengurutan';
+            const n = array.length;
+            
+            for (let i = 0; i < n - 1; i++) {
+                for (let j = 0; j < n - i - 1; j++) {
+                    sorotElemen(idArray, j, 'membandingkan');
+                    sorotElemen(idArray, j + 1, 'membandingkan');
+                    await jeda(kecepatanAnimasi);
+                    
+                    if (array[j] > array[j + 1]) {
+                        [array[j], array[j + 1]] = [array[j + 1], array[j]];
+                        await perbaruiArray(idArray, array);
+                        await jeda(kecepatanAnimasi);
+                    }
+                    
+                    resetSorotan(idArray);
+                }
+                sorotElemen(idArray, n - 1 - i, 'terurut');
+            }
+            sorotElemen(idArray, 0, 'terurut'); // Sorot elemen pertama juga
+        }
+
+        // Implementasi algoritma pengurutan: Shell Sort
+        async function shellSort(array, dariPencarian) {
+            const idArray = dariPencarian ? 'array-pencarian' : 'array-pengurutan';
+            const n = array.length;
+            
+            for (let gap = Math.floor(n / 2); gap > 0; gap = Math.floor(gap / 2)) {
+                for (let i = gap; i < n; i++) {
+                    const temp = array[i];
+                    let j;
+                    
+                    sorotElemen(idArray, i, 'membandingkan');
+                    await jeda(kecepatanAnimasi);
+                    
+                    for (j = i; j >= gap && array[j - gap] > temp; j -= gap) {
+                        sorotElemen(idArray, j - gap, 'membandingkan');
+                        array[j] = array[j - gap];
+                        await perbaruiArray(idArray, array);
+                        await jeda(kecepatanAnimasi);
+                        resetSorotan(idArray, j - gap);
+                    }
+                    
+                    array[j] = temp;
+                    await perbaruiArray(idArray, array);
+                    resetSorotan(idArray);
+                }
+            }
+        }
+
+        // Implementasi algoritma pengurutan: Quick Sort
+        async function quickSort(array, low, high, dariPencarian) {
+            if (low < high) {
+                const pi = await partition(array, low, high, dariPencarian);
+                await quickSort(array, low, pi - 1, dariPencarian);
+                await quickSort(array, pi + 1, high, dariPencarian);
+            }
+        }
+
+        async function partition(array, low, high, dariPencarian) {
+            const idArray = dariPencarian ? 'array-pencarian' : 'array-pengurutan';
+            const pivot = array[high];
+            let i = low - 1;
+            
+            for (let j = low; j <= high - 1; j++) {
+                sorotElemen(idArray, j, 'membandingkan');
+                sorotElemen(idArray, high, 'membandingkan');
+                await jeda(kecepatanAnimasi);
+                
+                if (array[j] < pivot) {
+                    i++;
+                    [array[i], array[j]] = [array[j], array[i]];
+                    await perbaruiArray(idArray, array);
+                    await jeda(kecepatanAnimasi);
+                }
+                
+                resetSorotan(idArray, j);
+                resetSorotan(idArray, high);
+            }
+            
+            [array[i + 1], array[high]] = [array[high], array[i + 1]];
+            await perbaruiArray(idArray, array);
+            return i + 1;
+        }
+
+        // Implementasi algoritma pengurutan: Radix Sort
+        async function radixSort(array, dariPencarian) {
+            const idArray = dariPencarian ? 'array-pencarian' : 'array-pengurutan';
+            const max = Math.max(...array);
+            
+            for (let exp = 1; Math.floor(max / exp) > 0; exp *= 10) {
+                await countingSort(array, exp, idArray);
+            }
+        }
+
+        async function countingSort(array, exp, idArray) {
+            const n = array.length;
+            const output = new Array(n);
+            const count = new Array(10).fill(0);
+            
+            for (let i = 0; i < n; i++) {
+                const digit = Math.floor(array[i] / exp) % 10;
+                count[digit]++;
+            }
+            
+            for (let i = 1; i < 10; i++) {
+                count[i] += count[i - 1];
+            }
+            
+            for (let i = n - 1; i >= 0; i--) {
+                const digit = Math.floor(array[i] / exp) % 10;
+                output[count[digit] - 1] = array[i];
+                count[digit]--;
+                
+                sorotElemen(idArray, i, 'membandingkan');
+                await jeda(kecepatanAnimasi / 2);
+                resetSorotan(idArray, i);
+            }
+            
+            for (let i = 0; i < n; i++) {
+                array[i] = output[i];
+                await perbaruiArray(idArray, array);
+                await jeda(kecepatanAnimasi / 2);
+            }
+        }
+
+        // Fungsi bantuan untuk animasi
+        function sorotElemen(idArray, index, kelas, warna) {
+            const elemen = document.getElementById(`${idArray}-${index}`);
+            if (!elemen) return;
+            
+            elemen.classList.add(kelas);
+            if (warna) {
+                elemen.style.backgroundColor = warna;
+            }
+        }
+
+        function resetSorotan(idArray, index = null) {
+            if (index !== null) {
+                const elemen = document.getElementById(`${idArray}-${index}`);
+                if (elemen) {
+                    elemen.className = 'elemen-array';
+                }
+            } else {
+                // Reset semua elemen
+                const container = document.getElementById(idArray);
+                const elemenElemen = container.getElementsByClassName('elemen-array');
+                for (let elemen of elemenElemen) {
+                    elemen.className = 'elemen-array';
+                }
+            }
+        }
+
+        async function perbaruiArray(idArray, array) {
+            const container = document.getElementById(idArray);
+            const elemenElemen = container.getElementsByClassName('elemen-array');
+            
+            for (let i = 0; i < array.length; i++) {
+                if (elemenElemen[i]) {
+                    elemenElemen[i].textContent = array[i];
+                }
+            }
+            
+            return new Promise(resolve => setTimeout(resolve, kecepatanAnimasi / 2));
+        }
+
+        function jeda(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Fungsi untuk memperbarui penjelasan algoritma
+        function updatePenjelasanPencarian() {
+            const algoritma = document.getElementById('algoritma-pencarian').value;
+            const penjelasanDiv = document.getElementById('penjelasan-pencarian');
+            
+            switch (algoritma) {
+                case 'sequential':
+                    penjelasanDiv.innerHTML = `
+                        <strong>Pencarian Sekuensial</strong><br>
+                        Algoritma paling sederhana untuk mencari elemen dalam array.
+                        Cocok untuk data yang tidak terurut.<br><br>
+                        <strong>Cara kerja:</strong><br>
+                        1. Memeriksa setiap elemen satu per satu dari awal hingga akhir<br>
+                        2. Jika elemen ditemukan, kembalikan indeksnya<br>
+                        3. Jika tidak ditemukan setelah memeriksa semua elemen, kembalikan -1<br><br>
+                        <strong>Kompleksitas waktu:</strong> O(n)
+                    `;
+                    break;
+                case 'binary':
+                    penjelasanDiv.innerHTML = `
+                        <strong>Pencarian Biner</strong><br>
+                        Algoritma efisien untuk mencari elemen dalam array <strong>yang sudah terurut</strong>.<br><br>
+                        <strong>Cara kerja:</strong><br>
+                        1. Bandingkan nilai yang dicari dengan elemen tengah array<br>
+                        2. Jika sama, kembalikan indeks<br>
+                        3. Jika nilai lebih kecil, cari di setengah kiri<br>
+                        4. Jika nilai lebih besar, cari di setengah kanan<br><br>
+                        <strong>Kompleksitas waktu:</strong> O(log n)
+                    `;
+                    break;
+                case 'interpolation':
+                    penjelasanDiv.innerHTML = `
+                        <strong>Pencarian Interpolasi</strong><br>
+                        Variasi lebih canggih dari binary search yang menggunakan perkiraan posisi
+                        berdasarkan nilai yang dicari (cocok untuk data terurut dan terdistribusi merata).<br><br>
+                        <strong>Cara kerja:</strong><br>
+                        1. Hitung perkiraan posisi menggunakan rumus interpolasi<br>
+                        2. Bandingkan nilai pada posisi tersebut dengan nilai yang dicari<br>
+                        3. Jika sama, kembalikan indeks<br>
+                        4. Jika tidak, sesuaikan area pencarian berdasarkan perbandingan<br><br>
+                        <strong>Kompleksitas waktu:</strong> O(log log n) [pada kasus terbaik]
+                    `;
+                    break;
+            }
+        }
+
+        function updatePenjelasanPengurutan() {
+            const penjelasanDiv = document.getElementById('penjelasan-pengurutan');
+            penjelasanDiv.innerHTML = `
+                Pilih algoritma pengurutan untuk melihat penjelasannya. Setiap algoritma memiliki karakteristik dan kegunaan yang berbeda:<br><br>
+                <strong>Insertion Sort:</strong> Sederhana, efisien untuk data kecil atau hampir terurut<br>
+                <strong>Merge Sort:</strong> Divide and conquer, stabil, cocok untuk data besar<br>
+                <strong>Bubble Sort:</strong> Sederhana tetapi tidak efisien untuk data besar<br>
+                <strong>Shell Sort:</strong> Peningkatan dari insertion sort dengan menggunakan gap<br>
+                <strong>Quick Sort:</strong> Divide and conquer, umumnya paling cepat dalam praktik<br>
+                <strong>Radix Sort:</strong> Tidak berbasis perbandingan, cocok untuk bilangan dengan digit terbatas
+            `;
+        }
+
+        // Event listeners
+        document.getElementById('algoritma-pencarian').addEventListener('change', updatePenjelasanPencarian);
+        document.getElementById('kontrol-kecepatan').addEventListener('input', updateKecepatan);
+        updateKepeedan();
+    </script>
+</body>
+</html>
